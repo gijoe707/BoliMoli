@@ -1,15 +1,36 @@
+# Built files and Gradle output
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+.gradle/
+build/
+/*/build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Local configuration & environment (SDK location, local tokens)
 local.properties
+
+# Android Studio / IntelliJ IDEA user-specific files
+.idea/workspace.xml
+.idea/deploymentTargetSelector.xml
+.idea/tasks.xml
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/shelf/
+
+# Output binaries & signing keys
+*.apk
+*.aab
+*.jks
+*.keystore
+*.pepk
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
