@@ -58,6 +58,10 @@ object TamilDictionaryRepository {
         DictionaryWord("நீ", "முன்னிலை நபர்", "You", "nee", "", "nee_sound"),
         DictionaryWord("நோ", "துன்பம் / நோய்", "Pain / Illness", "no", "", "no_sound"),
         DictionaryWord("தூ", "தூய்மை / வெண்மை", "Pure / White", "thoo", "", "thoo_sound"),
+        DictionaryWord("நா", "நாக்கு", "Tongue", "naa", "", "naa_sound"),
+        DictionaryWord("மா", "பழ வகை", "Mango", "maa", "", "maa_sound"),
+        DictionaryWord("பா", "பாட்டு / செய்யுள்", "Song / Verse", "paa", "", "paa_sound"),
+        DictionaryWord("வை", "வைத்தல், வைக்க", "Keep / Place", "vai", "", "vai_sound"),
 
         // =====================================================================================
         // LEVEL 2: 2-Letter Words
@@ -87,6 +91,40 @@ object TamilDictionaryRepository {
         DictionaryWord("வழி", "செல்லும் பாதை", "Way / Path", "vazhi", "", "vazhi_sound"),
         DictionaryWord("ஒலி", "சத்தம் / ஓசை", "Sound", "oli", "", "oli_sound"),
         DictionaryWord("கூடு", "பறவைக் கூடு", "Nest", "koodu", "", "koodu_sound"),
+        DictionaryWord("நாய்", "வீட்டு விலங்கு", "Dog", "naai", "", "naai_sound"),
+        DictionaryWord("பசு", "பால் தரும் விலங்கு", "Cow", "pasu", "", "pasu_sound"),
+        DictionaryWord("பூனை", "பால் குடிக்கும் சிறு விலங்கு", "Cat", "poonai", "", "poonai_sound"),
+        DictionaryWord("முயல்", "குறுகிய வால் விலங்கு", "Rabbit", "muyal", "", "muyal_sound"),
+        DictionaryWord("நிலா", "வானில் தெரியும் நிலவு", "Moon", "nilaa", "", "nilaa_sound"),
+        DictionaryWord("குளம்", "சிறிய நீர்நிலை", "Pond", "kulam", "", "kulam_sound"),
+        DictionaryWord("மலை", "உயர்ந்த நிலப்பகுதி", "Hill / Mountain", "malai", "", "malai_sound"),
+        DictionaryWord("கடை", "பொருட்கள் விற்கும் இடம்", "Shop", "kadai", "", "kadai_sound"),
+        DictionaryWord("மூக்கு", "மூச்சு விடும் உறுப்பு", "Nose", "mookku", "", "mookku_sound"),
+        DictionaryWord("காது", "கேட்கும் உறுப்பு", "Ear", "kaathu", "", "kaathu_sound"),
+        DictionaryWord("வாய்", "பேசும் உறுப்பு", "Mouth", "vaai", "", "vaai_sound"),
+        DictionaryWord("தலை", "உடலின் மேல் பகுதி", "Head", "thalai", "", "thalai_sound"),
+        DictionaryWord("விரல்", "கையின் உறுப்பு", "Finger", "viral", "", "viral_sound"),
+        DictionaryWord("பல்", "வாயின் உறுப்பு", "Tooth", "pal", "", "pal_sound"),
+        DictionaryWord("பாம்பு", "ஊர்வன விலங்கு", "Snake", "paambu", "", "paambu_sound"),
+        DictionaryWord("மான்", "காட்டு விலங்கு", "Deer", "maan", "", "maan_sound"),
+        DictionaryWord("புறா", "வெண் பறவை", "Pigeon", "pura", "", "pura_sound"),
+        DictionaryWord("நெல்", "விளைபயிர்", "Paddy", "nel", "", "nel_sound"),
+        DictionaryWord("பழம்", "இனிப்பான உணவு", "Fruit", "pazham", "", "pazham_sound"),
+        DictionaryWord("சோறு", "சமைத்த அரிசி உணவு", "Cooked rice", "soru", "", "soru_sound"),
+        DictionaryWord("பாடம்", "கற்கும் பகுதி", "Lesson", "paadam", "", "paadam_sound"),
+        DictionaryWord("வண்டி", "சக்கர வாகனம்", "Vehicle / Cart", "vandi", "", "vandi_sound"),
+        DictionaryWord("மேசை", "எழுத, சாப்பிட உதவும் பலகை", "Table", "mesai", "", "mesai_sound"),
+        DictionaryWord("பேனா", "எழுதும் கருவி", "Pen", "penaa", "", "penaa_sound"),
+        DictionaryWord("தம்பி", "இளைய சகோதரன்", "Younger brother", "thambi", "", "thambi_sound"),
+        DictionaryWord("அக்கா", "மூத்த சகோதரி", "Elder sister", "akkaa", "", "akkaa_sound"),
+        DictionaryWord("அண்ணா", "மூத்த சகோதரன்", "Elder brother", "annaa", "", "annaa_sound"),
+        DictionaryWord("தாத்தா", "தந்தையின் தந்தை", "Grandfather", "thaathaa", "", "thaathaa_sound"),
+        DictionaryWord("பாட்டி", "தாயின் தாய்", "Grandmother", "paatti", "", "paatti_sound"),
+        DictionaryWord("குடை", "மழையில் பயன்படும் பொருள்", "Umbrella", "kudai", "", "kudai_sound"),
+        DictionaryWord("தோழி", "பெண் நண்பர்", "Girl friend", "thozhi", "", "thozhi_sound"),
+        DictionaryWord("தேனீ", "தேன் தரும் பூச்சி", "Bee", "thenee", "", "thenee_sound"),
+        DictionaryWord("நண்டு", "கடல் ஓட்டு உயிரி", "Crab", "nandu", "", "nandu_sound"),
+        DictionaryWord("பொம்மை", "விளையாட்டுப் பொருள்", "Doll / Toy", "bommai", "", "bommai_sound"),
 
         // =====================================================================================
         // LEVEL 3: 3-Letter Words
@@ -111,6 +149,18 @@ object TamilDictionaryRepository {
         DictionaryWord("மேகம்", "வானத்து மேகம்", "Cloud", "maegam", "", "maegam_sound"),
         DictionaryWord("வானம்", "நீல ஆகாயம்", "Sky", "vaanam", "", "vaanam_sound"),
         DictionaryWord("தாமரை", "தேசிய மலர்", "Lotus", "thaamarai", "", "thaamarai_sound"),
+        DictionaryWord("குரங்கு", "மரத்தில் தாவும் விலங்கு", "Monkey", "kurangu", "", "kurangu_sound"),
+        DictionaryWord("பறவை", "பறக்கும் உயிரி", "Bird", "paravai", "", "paravai_sound"),
+        DictionaryWord("கதவு", "நுழைவு வாயில்", "Door", "kadhavu", "", "kadhavu_sound"),
+        DictionaryWord("அரிசி", "சமைக்கும் தானியம்", "Rice (grain)", "arisi", "", "arisi_sound"),
+        DictionaryWord("நாற்காலி", "அமரும் இருக்கை", "Chair", "naarkaali", "", "naarkaali_sound"),
+        DictionaryWord("எறும்பு", "சிறிய பூச்சி", "Ant", "erumbu", "", "erumbu_sound"),
+        DictionaryWord("குழந்தை", "சிறு பிள்ளை", "Child / Baby", "kuzhandhai", "", "kuzhandhai_sound"),
+        DictionaryWord("சிறுவன்", "ஆண் பிள்ளை", "Boy", "siruvan", "", "siruvan_sound"),
+        DictionaryWord("சிறுமி", "பெண் பிள்ளை", "Girl", "sirumi", "", "sirumi_sound"),
+        DictionaryWord("காலணி", "காலில் அணியும் பொருள்", "Shoe / Sandal", "kaalani", "", "kaalani_sound"),
+        DictionaryWord("இரவு", "சூரியன் மறைந்த பின் நேரம்", "Night", "iravu", "", "iravu_sound"),
+        DictionaryWord("பேருந்து", "பயணிகள் வாகனம்", "Bus", "perunthu", "", "perunthu_sound"),
 
         // =====================================================================================
         // LEVEL 4: 4-Letter Words
@@ -128,6 +178,9 @@ object TamilDictionaryRepository {
         DictionaryWord("தக்காளி", "சிவப்புக் காய்கறி", "Tomato", "thakkaali", "", "thakkaali_sound"),
         DictionaryWord("மாணவர்", "கல்வி கற்கும் நபர்", "Student", "maanavar", "", "maanavar_sound"),
         DictionaryWord("ஆப்பிள்", "இனிப்பான சுவை பழம்", "Apple", "aappil", "apple", "aappil_sound"),
+        DictionaryWord("ஆசிரியர்", "கற்பிக்கும் நபர்", "Teacher", "aasiriyar", "", "aasiriyar_sound"),
+        DictionaryWord("கட்டிடம்", "கட்டப்பட்ட அமைப்பு", "Building", "kattidam", "", "kattidam_sound"),
+        DictionaryWord("வானொலி", "ஒலி பரப்பும் பெட்டி", "Radio", "vaanoli", "", "vaanoli_sound"),
 
         // =====================================================================================
         // LEVEL 5: 5-Letter Words
