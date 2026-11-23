@@ -409,6 +409,29 @@ object CurriculumRepository {
         }
     }
 
+    private fun wordOptionsFor(unit: PhonicsUnit, prefix: String): List<ExerciseOption> {
+        val targetWord = unit.startingWords.firstOrNull()
+        val targetText = targetWord?.wordTamil ?: unit.keywordTamil
+        val targetSubtext = targetWord?.wordEnglish ?: unit.keywordEnglish
+
+        val pool = poolFor(unit)
+        val distractors = pool
+            .filter { it.id != unit.id }
+            .take(3)
+            .map { distUnit ->
+                val w = distUnit.startingWords.firstOrNull()
+                val text = w?.wordTamil ?: distUnit.keywordTamil
+                val subtext = w?.wordEnglish ?: distUnit.keywordEnglish
+                ExerciseOption("${prefix}_${unit.id}_${distUnit.id}", text, subtext, isCorrect = false)
+            }
+
+        val correctOption = ExerciseOption("${prefix}_${unit.id}_correct", targetText, targetSubtext, isCorrect = true)
+        val allOptions = (listOf(correctOption) + distractors).distinctBy { it.text }
+
+        val shift = (unit.text.hashCode().let { if (it < 0) -it else it }) % allOptions.size
+        return allOptions.drop(shift) + allOptions.take(shift)
+    }
+
     private fun buildUnitExercises(unit: PhonicsUnit): List<LessonExercise> {
         val list = mutableListOf<LessonExercise>()
 
@@ -429,26 +452,30 @@ object CurriculumRepository {
             id = "ex_${unit.id}_reading",
             type = ExerciseType.READING_SKILL_TEST,
             targetUnit = unit,
-            promptText = "Skill 2 (Reading): Which letter makes the sound ${unit.phonicsSound}?",
-            options = optionsFor(unit, "read")
+            promptText = "Skill 2 (Word Association): Which word starts with the letter '${unit.text}'?",
+            options = wordOptionsFor(unit, "word")
         )
 
         val strokes = strokesFor(unit.id)
-        if (strokes.isNotEmpty()) {
-            list += LessonExercise(
-                id = "ex_${unit.id}_writing",
-                type = ExerciseType.WRITING_SKILL_TEST,
-                targetUnit = unit,
-                promptText = "Skill 3 (Writing): Trace the letter '${unit.text}' with your finger",
-                templateStrokes = strokes
-            )
-        }
+        list += LessonExercise(
+            id = "ex_${unit.id}_writing_guided",
+            type = ExerciseType.WRITING_SKILL_TEST,
+            targetUnit = unit,
+            promptText = "Skill 3 (Guided Tracing): Trace the letter '${unit.text}' along the template outline",
+            templateStrokes = strokes
+        )
+        list += LessonExercise(
+            id = "ex_${unit.id}_writing_freehand",
+            type = ExerciseType.FREEHAND_WRITING_TEST,
+            targetUnit = unit,
+            promptText = "Skill 4 (Freehand Practice): Write '${unit.text}' on your own without a template!"
+        )
 
         list += LessonExercise(
             id = "ex_${unit.id}_speech",
             type = ExerciseType.SPEECH_PRECURSOR_TEST,
             targetUnit = unit,
-            promptText = "Skill 4 (Speech): Say the letter sound ${unit.phonicsSound}, or one of the example words"
+            promptText = "Skill 5 (Speech): Say the letter sound ${unit.phonicsSound}, or one of the example words"
         )
 
         unit.singleLetterWord?.let { single ->

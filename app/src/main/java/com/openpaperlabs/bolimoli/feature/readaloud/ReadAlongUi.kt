@@ -72,6 +72,8 @@ import com.openpaperlabs.bolimoli.core.curriculum.CurriculumRepository
 import com.openpaperlabs.bolimoli.core.text.TamilSyllableSegmenter
 import com.openpaperlabs.bolimoli.core.text.TamilTextSegmenter
 import com.openpaperlabs.bolimoli.core.text.TamilTransliteration
+import com.openpaperlabs.bolimoli.feature.mascot.KiliCheer
+import com.openpaperlabs.bolimoli.feature.mascot.KiliCorner
 import kotlinx.coroutines.delay
 import kotlin.math.PI
 import kotlin.math.cos
@@ -191,7 +193,8 @@ fun ReadAlongPlayer(
 
     val done = controller.statuses.count { it == WordStatus.CORRECT || it == WordStatus.SKIPPED }
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -344,6 +347,16 @@ fun ReadAlongPlayer(
                 Text("I said it!")
             }
         }
+    }
+
+    // Kili only does something when she is touched: she spells / syllables / says the word that was read wrongly
+    KiliCorner(
+        helper = controller.kili,
+        onTap = { controller.onKiliTapped() },
+        modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .padding(end = 4.dp, bottom = 4.dp)
+    )
     }
 
     val activeBreakdown = controller.activeBreakdownWord
@@ -642,7 +655,7 @@ private fun CompletionCard(
                     .padding(28.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("🎉", fontSize = 56.sp)
+                KiliCheer(height = 130.dp)
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     text = "Well done!",

@@ -44,9 +44,10 @@ data class PhonicsUnit(
 enum class ExerciseType {
     PRECURSOR_HEAR_SOUND,       // Listen to precursor isolated sound
     LISTENING_SKILL_TEST,       // Skill 1: Listening test (hear sound -> pick letter)
-    READING_SKILL_TEST,         // Skill 2: Reading test (see letter -> pick sound)
-    WRITING_SKILL_TEST,         // Skill 3: Writing/Tracing test
-    SPEECH_PRECURSOR_TEST,      // Skill 4: Speech test (isolated letter sound)
+    READING_SKILL_TEST,         // Skill 2: Word Association test (see letter -> pick word starting with it)
+    WRITING_SKILL_TEST,         // Skill 3: Guided Tracing (with template outline)
+    FREEHAND_WRITING_TEST,      // Skill 4: Freehand Writing (write without template)
+    SPEECH_PRECURSOR_TEST,      // Skill 5: Speech test (isolated letter sound)
     SINGLE_LETTER_MEANING_TEST, // Single-letter word meaning (ஓரெழுத்து ஒருமொழி e.g. கை=Hand, ஆ=Cow)
     WORD_VOCABULARY_SPEECH_TEST, // Vocabulary word speech test (e.g. அம்மா, ஆடு, கப்பல்)
     HEAR_AND_SEE,

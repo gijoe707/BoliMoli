@@ -40,6 +40,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -56,6 +57,9 @@ import androidx.core.content.ContextCompat
 import com.openpaperlabs.bolimoli.core.audio.AppAudioEngine
 import com.openpaperlabs.bolimoli.core.speech.SpeechRecognizerEngine
 import com.openpaperlabs.bolimoli.core.speech.SpeechState
+import com.openpaperlabs.bolimoli.core.mascot.KiliCoach
+import com.openpaperlabs.bolimoli.feature.mascot.KiliHelperRow
+import com.openpaperlabs.bolimoli.feature.mascot.KiliHelperState
 
 data class VocabularyCategory(
     val id: String,
@@ -253,6 +257,10 @@ fun VocabularySpeechScreen(
     val currentCategory = selectedCategory
     val currentItem = currentCategory?.items?.getOrNull(activeItemIndex)
 
+    // Kili the parrot: touch her for help with the word (spell it, then in parts, then whole); she cheers on a pass
+    val kili = remember { KiliHelperState(audioEngine) }
+    LaunchedEffect(isPassed) { if (isPassed) kili.cheer("மிகச் சிறப்பு!") }
+
     val speechEngine = remember(currentItem) {
         if (currentItem == null) null else {
             SpeechRecognizerEngine(context) { speechState ->
@@ -292,6 +300,7 @@ fun VocabularySpeechScreen(
 
     DisposableEffect(Unit) {
         onDispose {
+            kili.release()
             audioEngine.release()
             speechEngine?.destroy()
         }
@@ -444,6 +453,19 @@ fun VocabularySpeechScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+
+            KiliHelperRow(
+                helper = kili,
+                onTap = {
+                    // Kili talks, so the microphone must not be listening at the same time
+                    speechEngine?.stopListening()
+                    isListening = false
+                    speechStatusText = "Kili is helping. Then tap the mic and try again"
+                    kili.help("vocab:${currentItem.tamil}", KiliCoach.planForWord(currentItem.tamil))
+                }
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 text = speechStatusText.ifBlank { "Tap mic to speak '${currentItem.tamil}'" },

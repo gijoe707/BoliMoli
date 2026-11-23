@@ -74,6 +74,10 @@ import com.openpaperlabs.bolimoli.core.speech.SoundMatch
 import com.openpaperlabs.bolimoli.core.speech.SoundSiblings
 import com.openpaperlabs.bolimoli.core.speech.SpeechState
 import com.openpaperlabs.bolimoli.feature.tracing.TracingCanvas
+import com.openpaperlabs.bolimoli.core.mascot.KiliCoach
+import com.openpaperlabs.bolimoli.feature.mascot.KiliCheer
+import com.openpaperlabs.bolimoli.feature.mascot.KiliHelperRow
+import com.openpaperlabs.bolimoli.feature.mascot.KiliHelperState
 
 @Composable
 fun LessonScreen(
@@ -201,6 +205,19 @@ fun LessonScreen(
                     TracingCanvas(
                         letterText = currentExercise.targetUnit.text,
                         templateStrokes = currentExercise.templateStrokes,
+                        showTemplate = true,
+                        onTraceCompleted = {
+                            audioEngine.speakTamilText(currentExercise.targetUnit.text)
+                            isCorrectFeedback = true
+                        }
+                    )
+                }
+
+                ExerciseType.FREEHAND_WRITING_TEST -> {
+                    TracingCanvas(
+                        letterText = currentExercise.targetUnit.text,
+                        templateStrokes = emptyList(),
+                        showTemplate = false,
                         onTraceCompleted = {
                             audioEngine.speakTamilText(currentExercise.targetUnit.text)
                             isCorrectFeedback = true
@@ -445,6 +462,8 @@ fun LessonCompletionView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        KiliCheer(height = 120.dp)
+        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "🎉 Lesson Complete! 🎉",
             fontSize = 32.sp,
@@ -685,6 +704,11 @@ fun VocabularyWordSpeechView(
     var speechStatusText by remember { mutableStateOf("Tap the mic and say '$targetWordText'") }
     var isPassed by remember { mutableStateOf(false) }
 
+    // Kili: touch her for help with this word (spell it, then in parts, then the whole word); she cheers on a pass
+    val kili = remember { KiliHelperState(audioEngine) }
+    val kiliPlan = remember(targetWordText) { KiliCoach.planForWord(targetWordText) }
+    LaunchedEffect(isPassed) { if (isPassed) kili.cheer("மிகச் சிறப்பு!") }
+
     val speechEngine = remember {
         SpeechRecognizerEngine(context) { speechState ->
             when (speechState) {
@@ -721,6 +745,7 @@ fun VocabularyWordSpeechView(
 
     DisposableEffect(Unit) {
         onDispose {
+            kili.release()
             speechEngine.destroy()
         }
     }
@@ -735,9 +760,18 @@ fun VocabularyWordSpeechView(
         }
     }
 
+    fun onKiliTap() {
+        // Kili talks, so the microphone must not be listening at the same time
+        speechEngine.stopListening()
+        isListening = false
+        speechStatusText = "Kili is helping. Then tap the mic and try again"
+        kili.help("word:$targetWordText", kiliPlan)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -819,6 +853,10 @@ fun VocabularyWordSpeechView(
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        KiliHelperRow(helper = kili, onTap = { onKiliTap() })
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         // Mic Button
         Surface(
             modifier = Modifier
@@ -895,6 +933,11 @@ fun SayLetterView(
     val soundRecorder = remember { IsolatedSoundRecorder() }
     val mainHandler = remember { Handler(Looper.getMainLooper()) }
 
+    // Kili: touch her for help with this letter (its sound, then an example word); she cheers when the sound is accepted
+    val kili = remember { KiliHelperState(audioEngine) }
+    val kiliPlan = remember(unit.id) { KiliCoach.planForLetter(unit.text, unit.keywordTamil) }
+    LaunchedEffect(isPassed) { if (isPassed) kili.cheer("மிகச் சிறப்பு!") }
+
     // Build the TTS reference sounds (this letter first, then its siblings) in the background
     LaunchedEffect(unit.id) {
         ReferenceSoundBank.ensure(context, audioEngine, listOf(unit) + peerUnits) { referenceTick++ }
@@ -952,6 +995,7 @@ fun SayLetterView(
 
     DisposableEffect(Unit) {
         onDispose {
+            kili.release()
             soundRecorder.cancel()
             speechEngine.destroy()
         }
@@ -1055,6 +1099,20 @@ fun SayLetterView(
         }
     }
 
+    fun onKiliTap() {
+        // Kili talks, so nothing may be recording or listening at the same time
+        if (isRecordingSound) {
+            soundRecorder.cancel()
+            isRecordingSound = false
+            isListening = false
+        } else if (isListening) {
+            speechEngine.stopListening()
+            isListening = false
+        }
+        speechStatusText = "Kili is helping. Then tap the mic and try again"
+        kili.help("letter:${unit.id}", kiliPlan)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -1130,6 +1188,10 @@ fun SayLetterView(
         )
 
         Spacer(modifier = Modifier.height(24.dp))
+
+        KiliHelperRow(helper = kili, onTap = { onKiliTap() })
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         // Mic Button
         Surface(

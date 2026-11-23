@@ -1,30 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  BoliMoli launcher icon foreground: Kili the parrot peeking over an open book,
+  with sound waves on both sides of its head.
+  Artwork is drawn on a 380 x 380 grid and scaled into the 66dp adaptive-icon safe zone
+  (scale 0.5, then moved so the artwork centre lands on 54,54).
+-->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path android:pathData="M31,63.928c0,0 6.4,-11 12.1,-13.1c7.2,-2.6 26,-1.4 26,-1.4l38.1,38.1L107,108.928l-32,-1L31,63.928z">
-        <aapt:attr name="android:fillColor">
-            <gradient
-                android:endX="85.84757"
-                android:endY="92.4963"
-                android:startX="42.9492"
-                android:startY="49.59793"
-                android:type="linear">
-                <item
-                    android:color="#44000000"
-                    android:offset="0.0" />
-                <item
-                    android:color="#00000000"
-                    android:offset="1.0" />
-            </gradient>
-        </aapt:attr>
-    </path>
-    <path
-        android:fillColor="#FFFFFF"
-        android:fillType="nonZero"
-        android:pathData="M65.3,45.828l3.8,-6.6c0.2,-0.4 0.1,-0.9 -0.3,-1.1c-0.4,-0.2 -0.9,-0.1 -1.1,0.3l-3.9,6.7c-6.3,-2.8 -13.4,-2.8 -19.7,0l-3.9,-6.7c-0.2,-0.4 -0.7,-0.5 -1.1,-0.3C38.8,38.328 38.7,38.828 38.9,39.228l3.8,6.6C36.2,49.428 31.7,56.028 31,63.928h46C76.3,56.028 71.8,49.428 65.3,45.828zM43.4,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2c-0.3,-0.7 -0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C45.3,56.528 44.5,57.328 43.4,57.328L43.4,57.328zM64.6,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2s-0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C66.5,56.528 65.6,57.328 64.6,57.328L64.6,57.328z"
-        android:strokeWidth="1"
-        android:strokeColor="#00000000" />
+
+    <group
+        android:scaleX="0.5"
+        android:scaleY="0.5"
+        android:translateX="-41"
+        android:translateY="-37">
+
+        <!-- Sound waves, right and left of the head -->
+        <path android:pathData="M224.3,155.7 A16,16 0 0,1 224.3,176.3" android:strokeColor="#3B2F8F" android:strokeWidth="4" android:strokeLineCap="round" />
+        <path android:pathData="M231.9,149.3 A26,26 0 0,1 231.9,182.7" android:strokeColor="#3B2F8F" android:strokeWidth="4" android:strokeLineCap="round" />
+        <path android:pathData="M239.6,142.9 A36,36 0 0,1 239.6,189.1" android:strokeColor="#3B2F8F" android:strokeWidth="4" android:strokeLineCap="round" />
+        <path android:pathData="M155.7,155.7 A16,16 0 0,0 155.7,176.3" android:strokeColor="#3B2F8F" android:strokeWidth="4" android:strokeLineCap="round" />
+        <path android:pathData="M148.1,149.3 A26,26 0 0,0 148.1,182.7" android:strokeColor="#3B2F8F" android:strokeWidth="4" android:strokeLineCap="round" />
+        <path android:pathData="M140.4,142.9 A36,36 0 0,0 140.4,189.1" android:strokeColor="#3B2F8F" android:strokeWidth="4" android:strokeLineCap="round" />
+
+        <!-- Wings -->
+        <path android:pathData="M151,200 a9,18 0 1,0 18,0 a9,18 0 1,0 -18,0 z">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="linear" android:startX="160" android:startY="182" android:endX="160" android:endY="218">
+                    <item android:offset="0.0" android:color="#3FAE5D" />
+                    <item android:offset="1.0" android:color="#1B7336" />
+                </gradient>
+            </aapt:attr>
+        </path>
+        <path android:pathData="M211,200 a9,18 0 1,0 18,0 a9,18 0 1,0 -18,0 z">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="linear" android:startX="220" android:startY="182" android:endX="220" android:endY="218">
+                    <item android:offset="0.0" android:color="#3FAE5D" />
+                    <item android:offset="1.0" android:color="#1B7336" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- Body and belly -->
+        <path android:pathData="M164,195 a26,28 0 1,0 52,0 a26,28 0 1,0 -52,0 z">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="radial" android:centerX="182" android:centerY="184" android:gradientRadius="43">
+                    <item android:offset="0.0" android:color="#A4F2B6" />
+                    <item android:offset="0.55" android:color="#46C26B" />
+                    <item android:offset="1.0" android:color="#26864A" />
+                </gradient>
+            </aapt:attr>
+        </path>
+        <path android:pathData="M175,200 a15,18 0 1,0 30,0 a15,18 0 1,0 -30,0 z" android:fillColor="#B8EBA0" />
+
+        <!-- Crest -->
+        <path android:pathData="M182,135 Q186,120 192,133 Q196,122 200,135 Z" android:fillColor="#2A9448" />
+
+        <!-- Head -->
+        <path android:pathData="M162,160 a28,28 0 1,0 56,0 a28,28 0 1,0 -56,0 z">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="radial" android:centerX="181.6" android:centerY="148.8" android:gradientRadius="44.8">
+                    <item android:offset="0.0" android:color="#A4F2B6" />
+                    <item android:offset="0.55" android:color="#46C26B" />
+                    <item android:offset="1.0" android:color="#26864A" />
+                </gradient>
+            </aapt:attr>
+        </path>
+        <path android:pathData="M167,141 a10,5 0 1,0 20,0 a10,5 0 1,0 -20,0 z" android:fillColor="#FFFFFF" android:fillAlpha="0.35" />
+
+        <!-- Eyes: white, pupil, shine -->
+        <path android:pathData="M167,150 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0 z" android:fillColor="#FFFFFF" />
+        <path android:pathData="M199,150 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0 z" android:fillColor="#FFFFFF" />
+        <path android:pathData="M171.5,151 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0 z" android:fillColor="#3B2F8F" />
+        <path android:pathData="M201.5,151 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0 z" android:fillColor="#3B2F8F" />
+        <path android:pathData="M174.8,149.5 a1.2,1.2 0 1,0 2.4,0 a1.2,1.2 0 1,0 -2.4,0 z" android:fillColor="#FFFFFF" />
+        <path android:pathData="M204.8,149.5 a1.2,1.2 0 1,0 2.4,0 a1.2,1.2 0 1,0 -2.4,0 z" android:fillColor="#FFFFFF" />
+
+        <!-- Cheeks -->
+        <path android:pathData="M164,166 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0 z" android:fillColor="#F7A8B8" />
+        <path android:pathData="M208,166 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0 z" android:fillColor="#F7A8B8" />
+
+        <!-- Beak -->
+        <path android:pathData="M182,161 Q190,154 198,161 Q199,172 190,180 Q181,172 182,161 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="linear" android:startX="190" android:startY="154" android:endX="190" android:endY="180">
+                    <item android:offset="0.0" android:color="#FF9482" />
+                    <item android:offset="1.0" android:color="#D2432F" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- Book: cover, pages, page edge, shadow of the parrot -->
+        <path android:pathData="M146,214 L146,242 C164,237 178,238 190,244 C202,238 216,237 234,242 L234,214 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="linear" android:startX="190" android:startY="214" android:endX="190" android:endY="244">
+                    <item android:offset="0.0" android:color="#5E50C8" />
+                    <item android:offset="1.0" android:color="#271D6B" />
+                </gradient>
+            </aapt:attr>
+        </path>
+        <path android:pathData="M190,212 C178,206 160,206 150,210 L150,232 C164,228 178,229 190,235 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="linear" android:startX="150" android:startY="220" android:endX="190" android:endY="220">
+                    <item android:offset="0.0" android:color="#FFFFFF" />
+                    <item android:offset="1.0" android:color="#D5CFEE" />
+                </gradient>
+            </aapt:attr>
+        </path>
+        <path android:pathData="M190,212 C202,206 220,206 230,210 L230,232 C216,228 202,229 190,235 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient android:type="linear" android:startX="230" android:startY="220" android:endX="190" android:endY="220">
+                    <item android:offset="0.0" android:color="#FFFFFF" />
+                    <item android:offset="1.0" android:color="#D5CFEE" />
+                </gradient>
+            </aapt:attr>
+        </path>
+        <path android:pathData="M150,234 C164,230 178,231 190,237 C202,231 216,230 230,234" android:strokeColor="#B9B3E6" android:strokeWidth="2" />
+        <path android:pathData="M164,212 a26,4 0 1,0 52,0 a26,4 0 1,0 -52,0 z" android:fillColor="#271D6B" android:fillAlpha="0.18" />
+
+        <!-- Text lines on the pages; the green one is the word being read -->
+        <path android:pathData="M157,218 L182,218" android:strokeColor="#B9B3E6" android:strokeWidth="3.5" android:strokeLineCap="round" />
+        <path android:pathData="M157,225 L182,225" android:strokeColor="#B9B3E6" android:strokeWidth="3.5" android:strokeLineCap="round" />
+        <path android:pathData="M198,218 L223,218" android:strokeColor="#B9B3E6" android:strokeWidth="3.5" android:strokeLineCap="round" />
+        <path android:pathData="M198,225 L223,225" android:strokeColor="#2E9E5B" android:strokeWidth="3.5" android:strokeLineCap="round" />
+    </group>
 </vector>

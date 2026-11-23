@@ -9,8 +9,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.openpaperlabs.bolimoli.core.audio.AppAudioEngine
+import com.openpaperlabs.bolimoli.core.mascot.KiliCoach
 import com.openpaperlabs.bolimoli.core.speech.StreamingSpeechListener
 import com.openpaperlabs.bolimoli.core.speech.WordMatching
+import com.openpaperlabs.bolimoli.feature.mascot.KiliHelperState
 
 enum class MicState {
     /** Not listening. */
@@ -82,6 +84,9 @@ class ReadAlongController(
 
     val sentenceCount: Int get() = sentences.size
 
+    /** Kili the parrot: quiet until she is touched (see [onKiliTapped]); the screen shows her. */
+    val kili = KiliHelperState(audio)
+
     fun startIndexOf(sentence: Int): Int = starts[sentence]
 
     private var micWanted = false
@@ -95,6 +100,20 @@ class ReadAlongController(
         if (!released && micState == MicState.LISTENING && lastHeard.isNotEmpty()) {
             applyHeard(lastHeard, complete = true)
         }
+    }
+
+    init {
+        // While Kili speaks the microphone is closed (it would hear her); it re-opens by itself afterwards.
+        kili.onSpeakingStart = {
+            if (micWanted) {
+                handler.removeCallbacks(settleTask)
+                listener.pause()
+                micState = MicState.HELPING
+                message = LISTEN_MESSAGE
+            }
+            pendingSpeech++
+        }
+        kili.onSpeakingEnd = { onSpeechEnded() }
     }
 
     // ---- microphone ---------------------------------------------------------------------------
@@ -202,6 +221,7 @@ class ReadAlongController(
         listener.stop()
         tracker.reset()
         missCounts.clear()
+        kili.reset()
         demoWord = -1
         activeBreakdownWord = null
         micState = MicState.OFF
@@ -268,6 +288,27 @@ class ReadAlongController(
         val misses = (missCounts[index] ?: 0) + 1
         missCounts[index] = misses
         message = LISTENING_MESSAGE
+    }
+
+    /**
+     * The child touched Kili. She helps with the word that was read wrongly (the yellow one): the first touch spells
+     * it letter by letter, the second says it syllable by syllable, the third (and later ones) says the whole word.
+     * With no yellow word she helps with the next word to read. When everything has been read she just cheers.
+     */
+    fun onKiliTapped() {
+        if (released) return
+        val wrong = statuses.indexOfFirst { it == WordStatus.WRONG }
+        val target = when {
+            wrong >= 0 -> wrong
+            !finished && position in words.indices -> position
+            else -> -1
+        }
+        if (target < 0) {
+            kili.cheer("Well done!")
+            return
+        }
+        val word = words[target]
+        kili.help("$target:$word", KiliCoach.planForWord(word))
     }
 
     /** The child tapped a word: say it. */
@@ -342,6 +383,7 @@ class ReadAlongController(
     fun release() {
         released = true
         micWanted = false
+        kili.release()
         handler.removeCallbacksAndMessages(null)
         listener.destroy()
     }

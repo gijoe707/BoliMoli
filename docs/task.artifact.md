@@ -14,7 +14,8 @@ Nothing below is optional. The app cannot be published (or should not be) until 
 - `[x]` **Release-build test (R8 on)** on a real device: speech recognition, TTS, audio, tracing, profiles, parent dashboard, `keepRules/rules.keep`. Done; the earlier release crash is fixed. Re-run it on the final signed AAB before upload
 
 ### 🎨 Store identity & assets
-- `[ ]` **Launcher icon**: replace the default Android robot with a real adaptive icon (foreground, background, monochrome/themed)
+- `[x]` **Launcher icon**: Updated adaptive app icon with custom vector foreground, background, and monochrome drawables (`drawable/ic_launcher_background.xml`, `ic_launcher_foreground.xml`, `ic_launcher_monochrome.xml`; `mipmap-anydpi-v26`).
+- `[x]` **Mascot Integration**: Added Boli/Moli/Kili mascot visuals to guide kids through phonics activities and lessons.
 - `[ ]` **App name**: friendly store name (proposed: BoliMoli, see Settled Decisions), plus Tamil label via `values-ta/strings.xml`
 - `[ ]` **Play Store graphics**: 512x512 icon, 1024x500 feature graphic, phone screenshots (and tablet if supported)
 - `[ ]` **Store listing copy**: short and full description (Tamil and English), category (Education), contact email `support@openpaperlabs.app`
@@ -60,8 +61,8 @@ Nothing below is optional. The app cannot be published (or should not be) until 
 ### 📖 Curriculum & Phonics Core
 - `[x]` Vowels (`உயிர் எழுத்துகள்`) 12 letters + Aytham (`ஃ`) with flashcards & audio
 - `[x]` Consonants (`மெய் எழுத்துகள்`) 18 letters x 13 Uyirmei combinations
-- `[x]` Interactive 5-Skill Lesson Sequence (Listen, Read, Trace, Speech Match)
-- `[x]` Letter stroke order handwriting canvas (`TracingCanvas`)
+- `[x]` Interactive 5-Skill Lesson Sequence (Listen, Word Association, Guided Trace, Freehand Practice, Speech Match)
+- `[x]` Letter stroke order handwriting canvas (`TracingCanvas`) with vector glyph template outline, handwriting guidelines, freehand practice mode, and region/contour scribble validation
 - `[x]` On-device acoustic sound matcher (`AcousticSoundMatcher`)
 
 **Speech sound check: match the child's mic sound to the Android TTS sound of each letter**
@@ -222,9 +223,12 @@ The goal is to add the reward layer and variety on top of the read-along core. T
 
 **Step 4: Mascot and sound effects**
 - `[ ]` Design the friendly mascots (name, look, voice) following the illustration style guide. Proposed set: Boli, Moli and Kili (see "BoliMoli Worlds")
-- `[ ]` Mascot appears on the home screen, in lessons, in read-along and on the reward screen
-- `[ ]` Mascot cheers on success and gives hints
-- `[ ]` Mascot does the "say it again" model for a missed word: it says the word, then reading resumes
+- `[ ]` Mascot appears on the home screen, in lessons, in read-along and on the reward screen. Kili (the parrot) is now in the read-along and the custom text reader, the letter and word speech tests in lessons, the word quiz and the vocabulary practice; she also cheers on the lesson-complete page. Still missing: the home screen and a dedicated reward screen
+- `[x]` Mascot cheers on success: Kili hops out of the book with flapping wings and confetti when a sound or word is accepted and at the end of a story, lesson or quiz (silent, with a short bubble). She gives hints only when she is touched
+- `[x]` Kili as the helper in the speech tests, only when touched. In a story she works on the word that was read wrongly (yellow), or on the next word if there is none: 1st touch spells it letter by letter, 2nd says it syllable by syllable, 3rd (and later) says the whole word. The microphone closes while she speaks and re-opens by itself. Letter test: the sound first, then an example word. Word tests: the same spell / syllable / word steps. Code: `core/mascot/KiliCoach.kt`, `feature/mascot/KiliMascot.kt`, `feature/mascot/KiliHelperState.kt`, wired into `ReadAlongController`, `ReadAlongUi`, `LessonScreen`, `TestYourKnowledgeScreen` and `VocabularySpeechScreen`
+- `[ ]` **Build and test Kili** (written without a Gradle build; not compiled yet): compile, run `KiliCoachTest`, then check on a phone that touching her pauses and resumes the microphone, that the bubble lights up each part as it is spoken, and that her animation is smooth on a low-end device
+- `[ ]` Kili reduced-motion version (no hop or confetti) and a check that a touch while the TTS is still starting does not talk over itself
+- `[ ]` Ask the Tamil teacher whether a single letter such as `க்` or `ம்` should be spoken by its sound or by its name when Kili spells a word; today the TTS gets the letter text as it is
 - `[ ]` Record short mascot voice lines (native speaker, offline); keep spoken praise minimal
 - `[ ]` Short sound effects for correct, try again and lesson complete, instead of spoken praise; they follow the mute button and the parent's music/sound setting
 - `[ ]` Gentle feedback rules: never say or show "wrong" (or its Tamil equivalent). Audit every on-screen text and audio line for this

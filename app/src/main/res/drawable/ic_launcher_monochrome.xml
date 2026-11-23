@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  BoliMoli themed (monochrome) launcher icon: the same parrot-and-book drawing as one shape.
+  Android tints it, so only the silhouette matters. Eyes, beak and book pages are cut out.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <group
+        android:scaleX="0.5"
+        android:scaleY="0.5"
+        android:translateX="-41"
+        android:translateY="-37">
+
+        <!-- Sound waves -->
+        <path android:pathData="M224.3,155.7 A16,16 0 0,1 224.3,176.3" android:strokeColor="#000000" android:strokeWidth="4" android:strokeLineCap="round" />
+        <path android:pathData="M231.9,149.3 A26,26 0 0,1 231.9,182.7" android:strokeColor="#000000" android:strokeWidth="4" android:strokeLineCap="round" />
+        <path android:pathData="M239.6,142.9 A36,36 0 0,1 239.6,189.1" android:strokeColor="#000000" android:strokeWidth="4" android:strokeLineCap="round" />
+        <path android:pathData="M155.7,155.7 A16,16 0 0,0 155.7,176.3" android:strokeColor="#000000" android:strokeWidth="4" android:strokeLineCap="round" />
+        <path android:pathData="M148.1,149.3 A26,26 0 0,0 148.1,182.7" android:strokeColor="#000000" android:strokeWidth="4" android:strokeLineCap="round" />
+        <path android:pathData="M140.4,142.9 A36,36 0 0,0 140.4,189.1" android:strokeColor="#000000" android:strokeWidth="4" android:strokeLineCap="round" />
+
+        <!-- Wings, body, crest -->
+        <path android:pathData="M151,200 a9,18 0 1,0 18,0 a9,18 0 1,0 -18,0 z" android:fillColor="#000000" />
+        <path android:pathData="M211,200 a9,18 0 1,0 18,0 a9,18 0 1,0 -18,0 z" android:fillColor="#000000" />
+        <path android:pathData="M164,195 a26,28 0 1,0 52,0 a26,28 0 1,0 -52,0 z" android:fillColor="#000000" />
+        <path android:pathData="M182,135 Q186,120 192,133 Q196,122 200,135 Z" android:fillColor="#000000" />
+
+        <!-- Head with the eyes and beak cut out -->
+        <path
+            android:fillColor="#000000"
+            android:fillType="evenOdd"
+            android:pathData="M162,160 a28,28 0 1,0 56,0 a28,28 0 1,0 -56,0 z M167,150 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0 z M199,150 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0 z M182,161 Q190,154 198,161 Q199,172 190,180 Q181,172 182,161 Z" />
+        <path android:pathData="M171.5,151 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0 z" android:fillColor="#000000" />
+        <path android:pathData="M201.5,151 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0 z" android:fillColor="#000000" />
+
+        <!-- Book with the two pages cut out -->
+        <path
+            android:fillColor="#000000"
+            android:fillType="evenOdd"
+            android:pathData="M144,204 L144,242 C164,237 178,238 190,244 C202,238 216,237 236,242 L236,204 Z M190,212 C178,206 160,206 150,210 L150,232 C164,228 178,229 190,235 Z M190,212 C202,206 220,206 230,210 L230,232 C216,228 202,229 190,235 Z" />
+
+        <!-- Lines on the pages -->
+        <path android:pathData="M157,218 L182,218" android:strokeColor="#000000" android:strokeWidth="3.5" android:strokeLineCap="round" />
+        <path android:pathData="M157,225 L182,225" android:strokeColor="#000000" android:strokeWidth="3.5" android:strokeLineCap="round" />
+        <path android:pathData="M198,218 L223,218" android:strokeColor="#000000" android:strokeWidth="3.5" android:strokeLineCap="round" />
+        <path android:pathData="M198,225 L223,225" android:strokeColor="#000000" android:strokeWidth="3.5" android:strokeLineCap="round" />
+    </group>
+</vector>

@@ -41,6 +41,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -60,6 +61,10 @@ import com.openpaperlabs.bolimoli.core.curriculum.DictionaryWord
 import com.openpaperlabs.bolimoli.core.curriculum.TamilDictionaryRepository
 import com.openpaperlabs.bolimoli.core.speech.SpeechRecognizerEngine
 import com.openpaperlabs.bolimoli.core.speech.SpeechState
+import com.openpaperlabs.bolimoli.core.mascot.KiliCoach
+import com.openpaperlabs.bolimoli.feature.mascot.KiliCheer
+import com.openpaperlabs.bolimoli.feature.mascot.KiliHelperRow
+import com.openpaperlabs.bolimoli.feature.mascot.KiliHelperState
 
 /**
  * Single Activity / Screen for testing word knowledge in ONE continuous test session.
@@ -77,6 +82,12 @@ fun TestYourKnowledgeScreen(
     val audioEngine = remember { AppAudioEngine(context) }
     DisposableEffect(Unit) {
         onDispose { audioEngine.release() }
+    }
+
+    // Kili the parrot: touch her for help with the word; she cheers when the word is said right and at the end
+    val kili = remember { KiliHelperState(audioEngine) }
+    DisposableEffect(Unit) {
+        onDispose { kili.release() }
     }
 
     // Permission state for speech recognition
@@ -103,6 +114,8 @@ fun TestYourKnowledgeScreen(
     // Test status states for current word
     var speechState by remember { mutableStateOf<SpeechState>(SpeechState.Idle) }
     var speechPassed by remember { mutableStateOf(false) }
+    val kiliPlan = remember(currentWord) { KiliCoach.planForWord(currentWord.wordTamil) }
+    LaunchedEffect(speechPassed) { if (speechPassed) kili.cheer("மிகச் சிறப்பு!") }
 
     // Speech Engine instance
     var speechEngine by remember { mutableStateOf<SpeechRecognizerEngine?>(null) }
@@ -132,6 +145,13 @@ fun TestYourKnowledgeScreen(
             speechEngine?.stopListening()
             speechEngine = null
         }
+    }
+
+    fun onKiliTap() {
+        // Kili talks, so the microphone must not be listening at the same time
+        speechEngine?.stopListening()
+        speechState = SpeechState.Idle
+        kili.help("word:${currentWord.wordTamil}", kiliPlan)
     }
 
     // Meaning Test Choices (1 correct + 3 distractors)
@@ -298,7 +318,7 @@ fun TestYourKnowledgeScreen(
                             .padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "🏆", fontSize = 52.sp)
+                        KiliCheer(height = 110.dp)
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
                             text = "சோதனை நிறைவு பெற்றது!",
@@ -434,6 +454,10 @@ fun TestYourKnowledgeScreen(
                             )
 
                             Spacer(modifier = Modifier.height(14.dp))
+
+                            KiliHelperRow(helper = kili, onTap = { onKiliTap() })
+
+                            Spacer(modifier = Modifier.height(8.dp))
 
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
