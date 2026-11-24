@@ -63,6 +63,23 @@ object ProgressLogic {
         return if (today - state.lastActiveEpochDay <= 1) state.streakDays else 0
     }
 
+    fun touchActive(state: ProgressState, today: Long): ProgressState {
+        if (state.lastActiveEpochDay == today) {
+            return state.copy(streakDays = maxOf(state.streakDays, 1))
+        }
+        val newStreak = if (state.lastActiveEpochDay == ProgressState.NEVER) {
+            1
+        } else if (today - state.lastActiveEpochDay <= 1) {
+            state.streakDays + 1
+        } else {
+            1
+        }
+        return state.copy(
+            streakDays = maxOf(state.streakDays, newStreak),
+            lastActiveEpochDay = today
+        )
+    }
+
     fun recordLessonCompleted(
         state: ProgressState,
         unitId: String,
@@ -70,19 +87,13 @@ object ProgressLogic {
         usedSelfCheck: Boolean,
         today: Long
     ): ProgressState {
-        val newStreak = if (state.lastActiveEpochDay == today) {
-            maxOf(state.streakDays, 1)
-        } else {
-            displayStreak(state, today) + 1
-        }
-        val bestStars = maxOf(state.starsByUnit[unitId] ?: 0, stars.coerceIn(1, 3))
-        return state.copy(
-            starsByUnit = state.starsByUnit + (unitId to bestStars),
-            streakDays = newStreak,
-            lastActiveEpochDay = today,
-            completedUnitIds = state.completedUnitIds + unitId,
+        val touched = touchActive(state, today)
+        val bestStars = maxOf(touched.starsByUnit[unitId] ?: 0, stars.coerceIn(1, 3))
+        return touched.copy(
+            starsByUnit = touched.starsByUnit + (unitId to bestStars),
+            completedUnitIds = touched.completedUnitIds + unitId,
             genuineCompletedUnitIds =
-                if (usedSelfCheck) state.genuineCompletedUnitIds else state.genuineCompletedUnitIds + unitId
+                if (usedSelfCheck) touched.genuineCompletedUnitIds else touched.genuineCompletedUnitIds + unitId
         )
     }
 
@@ -92,19 +103,13 @@ object ProgressLogic {
         starsEarned: Int,
         today: Long
     ): ProgressState {
-        val newStreak = if (state.lastActiveEpochDay == today) {
-            maxOf(state.streakDays, 1)
-        } else {
-            displayStreak(state, today) + 1
-        }
-        val currentBest = state.starsByActivity[activityKey] ?: 0
+        val touched = touchActive(state, today)
+        val currentBest = touched.starsByActivity[activityKey] ?: 0
         val newBest = maxOf(currentBest, starsEarned.coerceAtLeast(0))
         val diff = newBest - currentBest
-        return state.copy(
-            starsByActivity = state.starsByActivity + (activityKey to newBest),
-            activityStars = state.activityStars + diff,
-            streakDays = newStreak,
-            lastActiveEpochDay = today
+        return touched.copy(
+            starsByActivity = touched.starsByActivity + (activityKey to newBest),
+            activityStars = touched.activityStars + diff
         )
     }
 
@@ -113,7 +118,7 @@ object ProgressLogic {
         if (capped <= 0) return state
         val updated = (state.secondsByEpochDay + (today to ((state.secondsByEpochDay[today] ?: 0) + capped)))
             .filterKeys { it > today - KEEP_DAYS }
-        return state.copy(secondsByEpochDay = updated)
+        return touchActive(state.copy(secondsByEpochDay = updated), today)
     }
 
     fun minutesToday(state: ProgressState, today: Long): Int =
