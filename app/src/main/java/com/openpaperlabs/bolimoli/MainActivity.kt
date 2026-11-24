@@ -48,7 +48,7 @@ import com.openpaperlabs.bolimoli.feature.parent.ParentDashboardScreen
 import com.openpaperlabs.bolimoli.feature.profile.ProfileSelectScreen
 import com.openpaperlabs.bolimoli.feature.readaloud.CustomTextReaderScreen
 import com.openpaperlabs.bolimoli.feature.readaloud.ReadAloudScreen
-import com.openpaperlabs.bolimoli.ui.theme.PhonicstaINTheme
+import com.openpaperlabs.bolimoli.ui.theme.BoliMoliTheme
 
 enum class AppScreen {
     PROFILE_SELECT,     // "who is learning?" - shown at launch when there are 0 or 2+ profiles
@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         backgroundMusic = BackgroundMusicPlayer(this)
         setContent {
-            PhonicstaINTheme {
+            BoliMoliTheme {
                 TamilPhonicsApp(backgroundMusic = backgroundMusic)
             }
         }
@@ -215,7 +215,12 @@ fun TamilPhonicsApp(backgroundMusic: BackgroundMusicPlayer? = null) {
     DisposableEffect(screenForTimer, unitForTimer) {
         val startedAt = SystemClock.elapsedRealtime()
         onDispose {
-            if (screenForTimer == AppScreen.LESSON) {
+            if (screenForTimer == AppScreen.LESSON ||
+                screenForTimer == AppScreen.READ_ALOUD ||
+                screenForTimer == AppScreen.CUSTOM_READER ||
+                screenForTimer == AppScreen.VOCABULARY_SPEECH ||
+                screenForTimer == AppScreen.TEST_KNOWLEDGE
+            ) {
                 val seconds = ((SystemClock.elapsedRealtime() - startedAt) / 1000).toInt()
                 commit(ProgressLogic.addStudySeconds(latestProgress, seconds, ProgressLogic.today()))
             }
@@ -301,6 +306,8 @@ fun TamilPhonicsApp(backgroundMusic: BackgroundMusicPlayer? = null) {
                 LearningPathScreen(
                     currentStars = totalStars,
                     currentStreak = streakDays,
+                    minutesLearnedToday = minutesLearnedToday,
+                    dailyGoalMinutes = dailyGoalMinutes,
                     vowelsCompleted = vowelsCompleted,
                     consonantsCompleted = consonantsCompleted,
                     onOpenVowels = {
@@ -451,6 +458,16 @@ fun TamilPhonicsApp(backgroundMusic: BackgroundMusicPlayer? = null) {
                     onBack = {
                         currentScreen = AppScreen.LEARNING_PATH
                     },
+                    onActivityCompleted = { stars ->
+                        commit(
+                            ProgressLogic.recordActivityCompleted(
+                                state = progress,
+                                activityKey = "vocab_speech",
+                                starsEarned = stars,
+                                today = ProgressLogic.today()
+                            )
+                        )
+                    },
                     modifier = Modifier.padding(innerPadding)
                 )
             }
@@ -459,6 +476,16 @@ fun TamilPhonicsApp(backgroundMusic: BackgroundMusicPlayer? = null) {
                 TestYourKnowledgeScreen(
                     onBack = {
                         currentScreen = AppScreen.LEARNING_PATH
+                    },
+                    onActivityCompleted = { stars ->
+                        commit(
+                            ProgressLogic.recordActivityCompleted(
+                                state = progress,
+                                activityKey = "test_knowledge",
+                                starsEarned = stars,
+                                today = ProgressLogic.today()
+                            )
+                        )
                     },
                     modifier = Modifier.padding(innerPadding)
                 )

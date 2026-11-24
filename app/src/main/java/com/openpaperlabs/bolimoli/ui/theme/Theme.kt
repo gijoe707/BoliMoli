@@ -10,33 +10,49 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+private val LightColorScheme = lightColorScheme(
+    primary = BoliPurple,
+    onPrimary = BoliSurfaceLight,
+    primaryContainer = BoliPurpleContainer,
+    onPrimaryContainer = BoliPurpleDark,
+    secondary = BoliConsonantText,
+    secondaryContainer = BoliConsonantContainer,
+    background = BoliBackgroundLight,
+    onBackground = BoliTextPrimaryLight,
+    surface = BoliSurfaceLight,
+    onSurface = BoliTextPrimaryLight,
+    surfaceVariant = BoliBackgroundLight,
+    onSurfaceVariant = BoliTextSecondaryLight,
+    error = BoliError,
+    errorContainer = BoliErrorContainer,
+    onError = BoliSurfaceLight,
+    onErrorContainer = BoliError
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+private val DarkColorScheme = darkColorScheme(
+    primary = BoliPurpleContainer,
+    onPrimary = BoliPurpleDark,
+    primaryContainer = BoliPurpleContainerDark,
+    onPrimaryContainer = BoliPurpleContainer,
+    secondary = BoliConsonantContainer,
+    secondaryContainer = BoliConsonantText,
+    background = BoliBackgroundDark,
+    onBackground = BoliTextPrimaryDark,
+    surface = BoliSurfaceDark,
+    onSurface = BoliTextPrimaryDark,
+    surfaceVariant = BoliSurfaceDark,
+    onSurfaceVariant = BoliTextSecondaryDark,
+    error = BoliError,
+    errorContainer = BoliErrorContainer,
+    onError = BoliSurfaceLight,
+    onErrorContainer = BoliErrorContainer
 )
 
 @Composable
-fun PhonicstaINTheme(
+fun BoliMoliTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    // Default false to ensure consistent BoliMoli child brand colors across all devices
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -44,7 +60,6 @@ fun PhonicstaINTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
@@ -54,4 +69,14 @@ fun PhonicstaINTheme(
         typography = Typography,
         content = content
     )
+}
+
+@Deprecated("Renamed to BoliMoliTheme", ReplaceWith("BoliMoliTheme(darkTheme, dynamicColor, content)"))
+@Composable
+fun PhonicstaINTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    dynamicColor: Boolean = false,
+    content: @Composable () -> Unit
+) {
+    BoliMoliTheme(darkTheme = darkTheme, dynamicColor = dynamicColor, content = content)
 }

@@ -39,6 +39,7 @@ import com.openpaperlabs.bolimoli.core.curriculum.ConsonantFamily
 import com.openpaperlabs.bolimoli.core.curriculum.CurriculumRepository
 import com.openpaperlabs.bolimoli.core.curriculum.PhonicsUnit
 import com.openpaperlabs.bolimoli.core.curriculum.UnitKind
+import com.openpaperlabs.bolimoli.ui.theme.*
 
 private const val GRID_COLUMNS = 4
 
@@ -231,10 +232,10 @@ private fun UnitTile(
     modifier: Modifier = Modifier
 ) {
     val (background, letterColor) = when (unit.kind) {
-        UnitKind.UYIR -> Color(0xFFEADDFF) to Color(0xFF21005D)
-        UnitKind.MEI -> Color(0xFFD6EEF8) to Color(0xFF0D3B66)
-        UnitKind.UYIRMEI -> Color(0xFFE0F2E9) to Color(0xFF1B5E20)
-        UnitKind.AYTHAM -> Color(0xFFFFE0B2) to Color(0xFFE65100)
+        UnitKind.UYIR -> BoliVowelContainer to BoliVowelText
+        UnitKind.MEI -> BoliConsonantContainer to BoliConsonantText
+        UnitKind.UYIRMEI -> BoliUyirmeiContainer to BoliUyirmeiText
+        UnitKind.AYTHAM -> BoliAythamContainer to BoliAythamText
     }
     TileCard(
         background = background,

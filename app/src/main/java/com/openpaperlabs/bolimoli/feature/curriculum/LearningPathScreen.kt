@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -31,11 +32,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.openpaperlabs.bolimoli.ui.theme.BoliAythamContainer
+import com.openpaperlabs.bolimoli.ui.theme.BoliAythamText
+import com.openpaperlabs.bolimoli.ui.theme.BoliConsonantContainer
+import com.openpaperlabs.bolimoli.ui.theme.BoliConsonantText
+import com.openpaperlabs.bolimoli.ui.theme.BoliPurple
+import com.openpaperlabs.bolimoli.ui.theme.BoliPurpleContainer
+import com.openpaperlabs.bolimoli.ui.theme.BoliPurpleDark
+import com.openpaperlabs.bolimoli.ui.theme.BoliStreakContainer
+import com.openpaperlabs.bolimoli.ui.theme.BoliStreakOrange
+import com.openpaperlabs.bolimoli.ui.theme.BoliSuccess
+import com.openpaperlabs.bolimoli.ui.theme.BoliSuccessContainer
+import com.openpaperlabs.bolimoli.ui.theme.BoliTextPrimaryLight
+import com.openpaperlabs.bolimoli.ui.theme.BoliTextSecondaryLight
+import com.openpaperlabs.bolimoli.ui.theme.BoliUyirmeiContainer
+import com.openpaperlabs.bolimoli.ui.theme.BoliVowelContainer
 
 @Composable
 fun LearningPathScreen(
     currentStars: Int,
     currentStreak: Int,
+    minutesLearnedToday: Int = 0,
+    dailyGoalMinutes: Int = 15,
     vowelsCompleted: Boolean = false,
     consonantsCompleted: Boolean = false,
     onOpenVowels: () -> Unit,
@@ -48,13 +66,15 @@ fun LearningPathScreen(
     onOpenLicenses: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val streakText = if (currentStreak == 1) "1 Day" else "$currentStreak Days"
+
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFFBF8FD))
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
-        // Top Header: Streak, XP & Daily Goal
+        // Top Header: Streak, Title & Stars
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -63,7 +83,7 @@ fun LearningPathScreen(
             // Streak counter
             Surface(
                 shape = RoundedCornerShape(20.dp),
-                color = Color(0xFFFFE0B2)
+                color = BoliStreakContainer
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
@@ -71,7 +91,7 @@ fun LearningPathScreen(
                 ) {
                     Text("🔥", fontSize = 18.sp)
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text("$currentStreak Days", fontWeight = FontWeight.Bold, color = Color(0xFFE65100))
+                    Text(streakText, fontWeight = FontWeight.Bold, color = BoliStreakOrange)
                 }
             }
 
@@ -80,13 +100,13 @@ fun LearningPathScreen(
                 text = "தமிழ் கற்போம்",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF6750A4)
+                color = BoliPurple
             )
 
-            // XP counter
+            // Stars counter
             Surface(
                 shape = RoundedCornerShape(20.dp),
-                color = Color(0xFFEADDFF)
+                color = BoliPurpleContainer
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
@@ -94,8 +114,55 @@ fun LearningPathScreen(
                 ) {
                     Text("⭐", fontSize = 18.sp)
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text("$currentStars", fontWeight = FontWeight.Bold, color = Color(0xFF21005D))
+                    Text("$currentStars", fontWeight = FontWeight.Bold, color = BoliPurpleDark)
                 }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Daily Practice Goal Card
+        val goalProgress = if (dailyGoalMinutes > 0) (minutesLearnedToday.toFloat() / dailyGoalMinutes.toFloat()).coerceIn(0f, 1f) else 0f
+        val isGoalHit = minutesLearnedToday >= dailyGoalMinutes
+
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20.dp),
+            color = if (isGoalHit) BoliSuccessContainer else BoliStreakContainer,
+            shadowElevation = 2.dp
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(if (isGoalHit) "🎯" else "⏱️", fontSize = 24.sp)
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
+                        Text(
+                            text = if (isGoalHit) "தினசரி இலக்கு எட்டப்பட்டது! 🎉" else "இன்றைய பயிற்சி (Daily Goal)",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                            color = if (isGoalHit) BoliSuccess else BoliStreakOrange
+                        )
+                        Text(
+                            text = "$minutesLearnedToday / $dailyGoalMinutes mins today",
+                            fontSize = 12.sp,
+                            color = BoliTextSecondaryLight
+                        )
+                    }
+                }
+
+                CircularProgressIndicator(
+                    progress = { goalProgress },
+                    modifier = Modifier.size(36.dp),
+                    color = if (isGoalHit) BoliSuccess else BoliStreakOrange,
+                    trackColor = if (isGoalHit) Color(0xFFA5D6A7) else Color(0xFFFFCC80),
+                    strokeWidth = 4.dp
+                )
             }
         }
 
@@ -105,7 +172,7 @@ fun LearningPathScreen(
             text = "Learning Path",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1D1B20)
+            color = BoliTextPrimaryLight
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -121,9 +188,9 @@ fun LearningPathScreen(
                     title = "உயிர் எழுத்துகள்",
                     subtitle = "Vowels - 12 sounds + ஃ",
                     icon = "அ",
-                    cardColor = Color(0xFFEADDFF),
-                    iconBackground = Color(0xFF6750A4),
-                    playTint = Color(0xFF6750A4),
+                    cardColor = BoliVowelContainer,
+                    iconBackground = BoliPurple,
+                    playTint = BoliPurple,
                     playDescription = "Open vowels",
                     isCompleted = vowelsCompleted,
                     onClick = onOpenVowels
@@ -136,9 +203,9 @@ fun LearningPathScreen(
                     title = "மெய் எழுத்துகள்",
                     subtitle = "Consonants - 18 letters x 13 sounds each",
                     icon = "க",
-                    cardColor = Color(0xFFD6EEF8),
-                    iconBackground = Color(0xFF0D3B66),
-                    playTint = Color(0xFF0D3B66),
+                    cardColor = BoliConsonantContainer,
+                    iconBackground = BoliConsonantText,
+                    playTint = BoliConsonantText,
                     playDescription = "Open consonants",
                     isCompleted = consonantsCompleted,
                     onClick = onOpenConsonants
@@ -151,9 +218,9 @@ fun LearningPathScreen(
                     title = "வார்த்தை உச்சரிப்பு",
                     subtitle = "Everyday Vocabulary Hub & Speech",
                     icon = "📖",
-                    cardColor = Color(0xFFE3F2FD),
-                    iconBackground = Color(0xFF1565C0),
-                    playTint = Color(0xFF1565C0),
+                    cardColor = BoliConsonantContainer,
+                    iconBackground = BoliConsonantText,
+                    playTint = BoliConsonantText,
                     playDescription = "Start Vocabulary Speech",
                     onClick = onStartVocabularySpeech
                 )
@@ -165,15 +232,15 @@ fun LearningPathScreen(
                     title = "கதை வாசித்தல்",
                     subtitle = "Grade 1-3 Stories with Read-Along",
                     icon = "🗣️",
-                    cardColor = Color(0xFFEADDFF),
-                    iconBackground = Color(0xFF21005D),
-                    playTint = Color(0xFF6750A4),
+                    cardColor = BoliVowelContainer,
+                    iconBackground = BoliPurpleDark,
+                    playTint = BoliPurple,
                     playDescription = "Start Stories Read Aloud",
                     onClick = onStartReadAloud
                 )
             }
 
-            // Test Your Knowledge Card (Speech + Meaning across Levels 1 to 7+ Letter Words)
+            // Test Your Knowledge Card
             item {
                 PathCard(
                     title = "அறிவு சோதனை",
@@ -193,9 +260,9 @@ fun LearningPathScreen(
                     title = "உரை வாசிப்பு",
                     subtitle = "Paste your own text and read along",
                     icon = "📝",
-                    cardColor = Color(0xFFFFE8D6),
-                    iconBackground = Color(0xFFBF360C),
-                    playTint = Color(0xFFBF360C),
+                    cardColor = BoliAythamContainer,
+                    iconBackground = BoliAythamText,
+                    playTint = BoliAythamText,
                     playDescription = "Start reading your own text",
                     onClick = onStartCustomReader
                 )
@@ -205,11 +272,11 @@ fun LearningPathScreen(
             item {
                 PathCard(
                     title = "பெற்றோர் பகுதி",
-                    subtitle = "Analytics, PIN Gate & Progress Heat Map",
+                    subtitle = "Analytics, Profiles & Progress Heat Map",
                     icon = "📊",
-                    cardColor = Color(0xFFE8F5E9),
-                    iconBackground = Color(0xFF2E7D32),
-                    playTint = Color(0xFF2E7D32),
+                    cardColor = BoliSuccessContainer,
+                    iconBackground = BoliSuccess,
+                    playTint = BoliSuccess,
                     playDescription = "Open Parent Dashboard",
                     onClick = onOpenParentDashboard
                 )
@@ -286,14 +353,14 @@ private fun PathCard(
                             text = title,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1D1B20)
+                            color = BoliTextPrimaryLight
                         )
                         if (isCompleted) {
                             Spacer(modifier = Modifier.width(8.dp))
                             Surface(
                                 modifier = Modifier.size(22.dp),
                                 shape = CircleShape,
-                                color = Color(0xFF2E7D32)
+                                color = BoliSuccess
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Text("✓", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
@@ -301,28 +368,28 @@ private fun PathCard(
                             }
                         }
                     }
+
                     Spacer(modifier = Modifier.height(4.dp))
+
                     Text(
                         text = subtitle,
-                        fontSize = 14.sp,
-                        color = Color(0xFF49454F)
+                        fontSize = 13.sp,
+                        color = BoliTextSecondaryLight
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
-
             Surface(
-                modifier = Modifier.size(44.dp),
+                modifier = Modifier.size(48.dp),
                 shape = CircleShape,
-                color = Color.White,
-                shadowElevation = 2.dp
+                color = Color.White
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         Icons.Default.PlayArrow,
                         contentDescription = playDescription,
-                        tint = playTint
+                        tint = playTint,
+                        modifier = Modifier.size(28.dp)
                     )
                 }
             }

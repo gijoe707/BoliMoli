@@ -12,19 +12,22 @@ import java.time.LocalDate
 data class ProgressState(
     /** Best stars (1-3) earned in each lesson. Replaying a lesson can only improve it, never add more. */
     val starsByUnit: Map<String, Int> = emptyMap(),
-    /** Consecutive days with at least one finished lesson, as of [lastActiveEpochDay]. */
+    /** Best stars earned in non-lesson activities (e.g. test_your_knowledge, vocabulary_speech, story_1). */
+    val starsByActivity: Map<String, Int> = emptyMap(),
+    val activityStars: Int = 0,
+    /** Consecutive days with at least one finished lesson or activity, as of [lastActiveEpochDay]. */
     val streakDays: Int = 0,
     val lastActiveEpochDay: Long = NEVER,
     /** Every lesson the child finished (including ones finished with the "I said it" self-check). */
     val completedUnitIds: Set<String> = emptySet(),
     /** Lessons finished without the self-check button. These get the green tick. */
     val genuineCompletedUnitIds: Set<String> = emptySet(),
-    /** Seconds spent inside lessons, per epoch day. Only the most recent days are kept. */
+    /** Seconds spent inside lessons and activities, per epoch day. Only the most recent days are kept. */
     val secondsByEpochDay: Map<Long, Int> = emptyMap(),
     val dailyGoalMinutes: Int = 15
 ) {
-    /** Total stars shown in the header: the sum of the best result of every lesson. */
-    val totalStars: Int get() = starsByUnit.values.sum()
+    /** Total stars shown in the header: the sum of the best result of every lesson and activity. */
+    val totalStars: Int get() = starsByUnit.values.sum() + activityStars
 
     companion object {
         const val NEVER = -1L
@@ -80,6 +83,28 @@ object ProgressLogic {
             completedUnitIds = state.completedUnitIds + unitId,
             genuineCompletedUnitIds =
                 if (usedSelfCheck) state.genuineCompletedUnitIds else state.genuineCompletedUnitIds + unitId
+        )
+    }
+
+    fun recordActivityCompleted(
+        state: ProgressState,
+        activityKey: String,
+        starsEarned: Int,
+        today: Long
+    ): ProgressState {
+        val newStreak = if (state.lastActiveEpochDay == today) {
+            maxOf(state.streakDays, 1)
+        } else {
+            displayStreak(state, today) + 1
+        }
+        val currentBest = state.starsByActivity[activityKey] ?: 0
+        val newBest = maxOf(currentBest, starsEarned.coerceAtLeast(0))
+        val diff = newBest - currentBest
+        return state.copy(
+            starsByActivity = state.starsByActivity + (activityKey to newBest),
+            activityStars = state.activityStars + diff,
+            streakDays = newStreak,
+            lastActiveEpochDay = today
         )
     }
 
@@ -154,19 +179,25 @@ object ProgressLogic {
 class ProgressStore(context: Context, profileId: String) {
     private val prefs = prefsFor(context, profileId)
 
-    fun load(): ProgressState = ProgressState(
-        starsByUnit = ProgressLogic.decodeStars(prefs.getString(KEY_STARS, "") ?: ""),
-        streakDays = prefs.getInt(KEY_STREAK, 0),
-        lastActiveEpochDay = prefs.getLong(KEY_LAST_ACTIVE, ProgressState.NEVER),
-        completedUnitIds = prefs.getStringSet(KEY_COMPLETED, null)?.toSet() ?: emptySet(),
-        genuineCompletedUnitIds = prefs.getStringSet(KEY_GENUINE, null)?.toSet() ?: emptySet(),
-        secondsByEpochDay = ProgressLogic.decodeSeconds(prefs.getString(KEY_SECONDS, "") ?: ""),
-        dailyGoalMinutes = prefs.getInt(KEY_GOAL, 15)
-    )
+    fun load(): ProgressState {
+        val activityMap = ProgressLogic.decodeStars(prefs.getString(KEY_ACTIVITY_STARS, "") ?: "")
+        return ProgressState(
+            starsByUnit = ProgressLogic.decodeStars(prefs.getString(KEY_STARS, "") ?: ""),
+            starsByActivity = activityMap,
+            activityStars = activityMap.values.sum(),
+            streakDays = prefs.getInt(KEY_STREAK, 0),
+            lastActiveEpochDay = prefs.getLong(KEY_LAST_ACTIVE, ProgressState.NEVER),
+            completedUnitIds = prefs.getStringSet(KEY_COMPLETED, null)?.toSet() ?: emptySet(),
+            genuineCompletedUnitIds = prefs.getStringSet(KEY_GENUINE, null)?.toSet() ?: emptySet(),
+            secondsByEpochDay = ProgressLogic.decodeSeconds(prefs.getString(KEY_SECONDS, "") ?: ""),
+            dailyGoalMinutes = prefs.getInt(KEY_GOAL, 15)
+        )
+    }
 
     fun save(state: ProgressState) {
         prefs.edit()
             .putString(KEY_STARS, ProgressLogic.encodeStars(state.starsByUnit))
+            .putString(KEY_ACTIVITY_STARS, ProgressLogic.encodeStars(state.starsByActivity))
             .putInt(KEY_STREAK, state.streakDays)
             .putLong(KEY_LAST_ACTIVE, state.lastActiveEpochDay)
             .putStringSet(KEY_COMPLETED, state.completedUnitIds.toMutableSet())
@@ -182,6 +213,7 @@ class ProgressStore(context: Context, profileId: String) {
         private const val LEGACY_KEY_MUSIC_ENABLED = "music_enabled"
 
         private const val KEY_STARS = "stars_by_unit"
+        private const val KEY_ACTIVITY_STARS = "stars_by_activity"
         private const val KEY_STREAK = "streak_days"
         private const val KEY_LAST_ACTIVE = "last_active_epoch_day"
         private const val KEY_COMPLETED = "completed_unit_ids"

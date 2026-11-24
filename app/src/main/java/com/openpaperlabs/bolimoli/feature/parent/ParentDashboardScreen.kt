@@ -202,7 +202,7 @@ fun ParentDashboardScreen(
                                 Text("🔥", fontSize = 16.sp)
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    text = "$currentStreak Days",
+                                    text = if (currentStreak == 1) "1 Day" else "$currentStreak Days",
                                     fontWeight = FontWeight.Bold,
                                     color = Color(0xFFE65100),
                                     fontSize = 13.sp
@@ -701,11 +701,12 @@ fun ParentDashboardScreen(
 
     // Export Progress Report Dialog
     if (showReportExportDialog) {
+        val streakText = if (currentStreak == 1) "1 Day" else "$currentStreak Days"
         val reportText = """
-            📊 Phonics-ta-IN Child Progress Report
+            📊 BoliMoli Child Progress Report
             ------------------------------------
             Student Profile: $profileName
-            Current Streak: $currentStreak Days
+            Current Streak: $streakText
             Letters Mastered: $totalMastered / $totalUnits
             Course Completion: $completionPercent%
             Minutes Learned Today: $minutesLearnedToday / $dailyGoalMinutes min

@@ -73,6 +73,7 @@ import com.openpaperlabs.bolimoli.core.speech.ReferenceSoundBank
 import com.openpaperlabs.bolimoli.core.speech.SoundMatch
 import com.openpaperlabs.bolimoli.core.speech.SoundSiblings
 import com.openpaperlabs.bolimoli.core.speech.SpeechState
+import com.openpaperlabs.bolimoli.ui.theme.*
 import com.openpaperlabs.bolimoli.feature.tracing.TracingCanvas
 import com.openpaperlabs.bolimoli.core.mascot.KiliCoach
 import com.openpaperlabs.bolimoli.feature.mascot.KiliCheer
@@ -144,12 +145,12 @@ fun LessonScreen(
                     .weight(1f)
                     .height(12.dp)
                     .padding(horizontal = 8.dp),
-                color = Color(0xFF6750A4),
+                color = BoliPurple,
                 trackColor = Color(0xFFE7E0EC)
             )
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Star, contentDescription = "Stars", tint = Color(0xFFFFB703))
+                Icon(Icons.Default.Star, contentDescription = "Stars", tint = BoliStarGold)
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     "${ProgressLogic.starsFor(wrongAnswers, usedSelfCheckInLesson)}",
@@ -252,14 +253,16 @@ fun LessonScreen(
                 }
 
                 ExerciseType.WORD_VOCABULARY_SPEECH_TEST -> {
-                    VocabularyWordSpeechView(
-                        exercise = currentExercise,
-                        audioEngine = audioEngine,
-                        onSpeechPass = { isSelfCheck ->
-                            if (isSelfCheck) usedSelfCheckInLesson = true
-                            isCorrectFeedback = true
-                        }
-                    )
+                    androidx.compose.runtime.key(currentExercise.id) {
+                        VocabularyWordSpeechView(
+                            exercise = currentExercise,
+                            audioEngine = audioEngine,
+                            onSpeechPass = { isSelfCheck ->
+                                if (isSelfCheck) usedSelfCheckInLesson = true
+                                isCorrectFeedback = true
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -281,7 +284,7 @@ fun LessonScreen(
             },
             enabled = isContinueEnabled,
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF6750A4)
+                containerColor = BoliPurple
             ),
             modifier = Modifier
                 .fillMaxWidth()
@@ -700,16 +703,18 @@ fun VocabularyWordSpeechView(
     val word = exercise.targetWord ?: exercise.targetUnit.startingWords.firstOrNull()
     val targetWordText = word?.wordTamil ?: exercise.targetUnit.keywordTamil
 
-    var isListening by remember { mutableStateOf(false) }
-    var speechStatusText by remember { mutableStateOf("Tap the mic and say '$targetWordText'") }
-    var isPassed by remember { mutableStateOf(false) }
+    var isListening by remember(exercise.id, targetWordText) { mutableStateOf(false) }
+    var speechStatusText by remember(exercise.id, targetWordText) {
+        mutableStateOf("Tap the mic and say '$targetWordText'")
+    }
+    var isPassed by remember(exercise.id, targetWordText) { mutableStateOf(false) }
 
     // Kili: touch her for help with this word (spell it, then in parts, then the whole word); she cheers on a pass
     val kili = remember { KiliHelperState(audioEngine) }
     val kiliPlan = remember(targetWordText) { KiliCoach.planForWord(targetWordText) }
     LaunchedEffect(isPassed) { if (isPassed) kili.cheer("மிகச் சிறப்பு!") }
 
-    val speechEngine = remember {
+    val speechEngine = remember(exercise.id, targetWordText) {
         SpeechRecognizerEngine(context) { speechState ->
             when (speechState) {
                 is SpeechState.Listening -> {
@@ -743,7 +748,7 @@ fun VocabularyWordSpeechView(
         }
     }
 
-    DisposableEffect(Unit) {
+    DisposableEffect(exercise.id, targetWordText) {
         onDispose {
             kili.release()
             speechEngine.destroy()

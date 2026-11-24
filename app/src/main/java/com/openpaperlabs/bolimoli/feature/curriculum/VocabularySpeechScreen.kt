@@ -32,6 +32,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import com.openpaperlabs.bolimoli.ui.theme.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -243,6 +244,7 @@ val VOCABULARY_CATEGORIES = listOf(
 @Composable
 fun VocabularySpeechScreen(
     onBack: () -> Unit,
+    onActivityCompleted: (Int) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -250,12 +252,14 @@ fun VocabularySpeechScreen(
     var selectedCategory by remember { mutableStateOf<VocabularyCategory?>(null) }
 
     var activeItemIndex by remember { mutableIntStateOf(0) }
-    var isListening by remember { mutableStateOf(false) }
-    var speechStatusText by remember { mutableStateOf("") }
-    var isPassed by remember { mutableStateOf(false) }
-
     val currentCategory = selectedCategory
     val currentItem = currentCategory?.items?.getOrNull(activeItemIndex)
+
+    var isListening by remember(currentItem) { mutableStateOf(false) }
+    var speechStatusText by remember(currentItem) {
+        mutableStateOf(currentItem?.let { "Tap the mic and say '${it.tamil}'" } ?: "")
+    }
+    var isPassed by remember(currentItem) { mutableStateOf(false) }
 
     // Kili the parrot: touch her for help with the word (spell it, then in parts, then whole); she cheers on a pass
     val kili = remember { KiliHelperState(audioEngine) }
@@ -282,6 +286,7 @@ fun VocabularySpeechScreen(
                             isPassed = true
                             speechStatusText = "Great job! Recognized: '${currentItem.tamil}'"
                             audioEngine.speakTamilText("சரியாக சொன்னாய்!")
+                            onActivityCompleted(1)
                         } else {
                             speechStatusText = "Heard '${speechState.topMatch}'. Try again!"
                         }
@@ -298,11 +303,16 @@ fun VocabularySpeechScreen(
         }
     }
 
+    DisposableEffect(currentItem) {
+        onDispose {
+            speechEngine?.destroy()
+        }
+    }
+
     DisposableEffect(Unit) {
         onDispose {
             kili.release()
             audioEngine.release()
-            speechEngine?.destroy()
         }
     }
 
@@ -319,7 +329,7 @@ fun VocabularySpeechScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFFBF8FD))
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
         // Top Header
@@ -343,7 +353,7 @@ fun VocabularySpeechScreen(
                     text = currentCategory?.titleTamil ?: "சொற்களஞ்சியம் (Vocabulary Hub)",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF6750A4)
+                    color = BoliPurple
                 )
                 Text(
                     text = currentCategory?.titleEnglish ?: "Explore everyday Tamil topics & practice speech",

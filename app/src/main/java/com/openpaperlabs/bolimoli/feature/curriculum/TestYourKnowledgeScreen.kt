@@ -38,6 +38,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
+import com.openpaperlabs.bolimoli.ui.theme.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -74,6 +75,7 @@ import com.openpaperlabs.bolimoli.feature.mascot.KiliHelperState
 @Composable
 fun TestYourKnowledgeScreen(
     onBack: () -> Unit,
+    onActivityCompleted: (Int) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -112,10 +114,14 @@ fun TestYourKnowledgeScreen(
     val currentWord = testWords.getOrNull(currentWordIndex) ?: testWords.first()
 
     // Test status states for current word
-    var speechState by remember { mutableStateOf<SpeechState>(SpeechState.Idle) }
-    var speechPassed by remember { mutableStateOf(false) }
+    var speechState by remember(currentWord) { mutableStateOf<SpeechState>(SpeechState.Idle) }
+    var speechPassed by remember(currentWord) { mutableStateOf(false) }
     val kiliPlan = remember(currentWord) { KiliCoach.planForWord(currentWord.wordTamil) }
     LaunchedEffect(speechPassed) { if (speechPassed) kili.cheer("மிகச் சிறப்பு!") }
+
+    // Score & Progress State
+    var totalStars by remember { mutableIntStateOf(0) }
+    var isTestComplete by remember { mutableStateOf(false) }
 
     // Speech Engine instance
     var speechEngine by remember { mutableStateOf<SpeechRecognizerEngine?>(null) }
@@ -129,11 +135,14 @@ fun TestYourKnowledgeScreen(
                     speechState = newState
                     if (newState is SpeechState.Recognized) {
                         val matchesTarget = newState.candidates.any { candidate ->
-                            candidate.trim().equals(currentWord.wordTamil.trim(), ignoreCase = true) ||
+                            SpeechRecognizerEngine.isMatch(candidate, currentWord.wordTamil) ||
                                     candidate.contains(currentWord.wordTamil)
                         }
-                        if (matchesTarget || newState.confidence > 0.5f) {
-                            speechPassed = true
+                        if (matchesTarget) {
+                            if (!speechPassed) {
+                                speechPassed = true
+                                totalStars += 1
+                            }
                             audioEngine.speakTamilText("மிகச் சிறப்பு!")
                         }
                     }
@@ -162,16 +171,14 @@ fun TestYourKnowledgeScreen(
     var selectedMeaningChoice by remember { mutableStateOf<DictionaryWord?>(null) }
     var meaningPassed by remember { mutableStateOf(false) }
 
-    // Score & Progress State
-    var totalStars by remember { mutableIntStateOf(0) }
-    var isTestComplete by remember { mutableStateOf(false) }
-
     // Helper to advance to next word or complete test session
     fun advanceToNextWord() {
         speechState = SpeechState.Idle
         speechPassed = false
         selectedMeaningChoice = null
         meaningPassed = false
+
+        onActivityCompleted(totalStars)
 
         if (currentWordIndex < testWords.lastIndex) {
             currentWordIndex++
@@ -395,13 +402,13 @@ fun TestYourKnowledgeScreen(
                                         audioEngine.speakTamilText(currentWord.wordTamil)
                                     },
                                     modifier = Modifier
-                                        .background(Color(0xFFEADDFF), CircleShape)
+                                        .background(BoliPurpleContainer, CircleShape)
                                         .size(40.dp)
                                 ) {
                                     Icon(
                                         Icons.AutoMirrored.Filled.VolumeUp,
                                         contentDescription = "Listen to pronunciation",
-                                        tint = Color(0xFF6750A4)
+                                        tint = BoliPurple
                                     )
                                 }
                             }
@@ -409,7 +416,7 @@ fun TestYourKnowledgeScreen(
                             Text(
                                 text = "Transliteration: /${currentWord.transliteration}/",
                                 fontSize = 14.sp,
-                                color = Color(0xFF6650a4),
+                                color = BoliPurple,
                                 fontWeight = FontWeight.Medium
                             )
                         }
@@ -598,8 +605,10 @@ fun TestYourKnowledgeScreen(
                                             .clickable(enabled = !meaningPassed) {
                                                 selectedMeaningChoice = option
                                                 if (isCorrect) {
-                                                    meaningPassed = true
-                                                    totalStars += 2
+                                                    if (!meaningPassed) {
+                                                        meaningPassed = true
+                                                        totalStars += 1
+                                                    }
                                                     audioEngine.speakTamilText("சரியான பொருள்!")
                                                 } else {
                                                     audioEngine.speakTamilText("தவறு. மீண்டும் முயல்க.")
@@ -643,8 +652,9 @@ fun TestYourKnowledgeScreen(
                         }
                     }
 
-                    // NEXT WORD BUTTON (Enabled when meaning is answered or speech & meaning are completed)
-                    if (meaningPassed || speechPassed) {
+                    // NEXT WORD BUTTON (Enabled when speech & meaning are both completed)
+                    val canAdvance = speechPassed && meaningPassed
+                    if (canAdvance) {
                         Button(
                             onClick = { advanceToNextWord() },
                             modifier = Modifier.fillMaxWidth(),
