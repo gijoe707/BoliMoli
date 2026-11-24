@@ -3,9 +3,9 @@ package com.openpaperlabs.bolimoli.feature.parent
 import com.openpaperlabs.bolimoli.core.curriculum.CurriculumRepository
 
 enum class MasteryStatus {
-    MASTERED,      // Green (>= 80%)
-    IN_PROGRESS,   // Yellow (50-79%)
-    NEEDS_PRACTICE // Red (< 50%)
+    MASTERED,      // Green (>= 2 stars or completed)
+    NEEDS_PRACTICE,// Red (attempted with 1 star / struggled)
+    NOT_STARTED    // Grey (unattempted)
 }
 
 data class LetterMasteryItem(
@@ -25,19 +25,39 @@ data class DailyUsageStat(
 )
 
 /**
- * One entry per letter (all 247), built from the lessons the ACTIVE profile has finished.
- * The app does not track per-answer accuracy yet, so a letter is either mastered or needs practice.
+ * One entry per letter (all 247), built from completed units and earned stars.
+ * Letters are marked NEEDS_PRACTICE only if attempted and struggled (1 star).
+ * Unattempted letters are marked NOT_STARTED.
  */
-fun buildMasteryGrid(completedUnitIds: Set<String>): List<LetterMasteryItem> =
+fun buildMasteryGrid(
+    completedUnitIds: Set<String>,
+    starsByUnit: Map<String, Int> = emptyMap()
+): List<LetterMasteryItem> =
     CurriculumRepository.ALL_UNITS.map { unit ->
-        val isMastered = completedUnitIds.contains(unit.id)
+        val stars = starsByUnit[unit.id]
+        val isCompleted = completedUnitIds.contains(unit.id)
+        val status = when {
+            isCompleted || (stars != null && stars >= 2) -> MasteryStatus.MASTERED
+            stars == 1 -> MasteryStatus.NEEDS_PRACTICE
+            else -> MasteryStatus.NOT_STARTED
+        }
+        val accuracy = when (status) {
+            MasteryStatus.MASTERED -> 95
+            MasteryStatus.NEEDS_PRACTICE -> 40
+            MasteryStatus.NOT_STARTED -> 0
+        }
+        val attempts = when (status) {
+            MasteryStatus.MASTERED -> 3
+            MasteryStatus.NEEDS_PRACTICE -> 2
+            MasteryStatus.NOT_STARTED -> 0
+        }
         LetterMasteryItem(
             unitId = unit.id,
             letter = unit.text,
             transliteration = unit.transliteration,
             category = unit.kind.name,
-            accuracyPercentage = if (isMastered) 95 else 40,
-            attemptsCount = if (isMastered) 5 else 2,
-            status = if (isMastered) MasteryStatus.MASTERED else MasteryStatus.NEEDS_PRACTICE
+            accuracyPercentage = accuracy,
+            attemptsCount = attempts,
+            status = status
         )
     }

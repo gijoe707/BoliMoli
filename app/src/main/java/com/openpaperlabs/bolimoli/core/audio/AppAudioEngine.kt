@@ -49,8 +49,15 @@ class AppAudioEngine(context: Context) : TextToSpeech.OnInitListener {
     }
 
     fun speakTamilText(text: String) {
+        val job = {
+            if (!isReleased) {
+                tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "tamil_phonics_tts")
+            }
+        }
         if (isTtsReady) {
-            tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "tamil_phonics_tts")
+            job()
+        } else {
+            pendingSynthesis += job
         }
     }
 
@@ -59,7 +66,14 @@ class AppAudioEngine(context: Context) : TextToSpeech.OnInitListener {
      * opened again at exactly that moment.
      */
     fun speakTamilTextThen(text: String, onFinished: (Boolean) -> Unit) {
-        speakTamilSequenceThen(listOf(text), 0L, onFinished)
+        val job = {
+            speakTamilSequenceThen(listOf(text), 0L, onFinished)
+        }
+        if (isTtsReady) {
+            job()
+        } else {
+            pendingSynthesis += job
+        }
     }
 
     /**

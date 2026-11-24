@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.VolumeOff
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
@@ -34,13 +36,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.openpaperlabs.bolimoli.AppScreen
-
-private val PURPLE = Color(0xFF6750A4)
 
 /**
  * Slim bar shown on every screen: the hamburger button on the left and, on the main page,
@@ -50,6 +49,8 @@ private val PURPLE = Color(0xFF6750A4)
 fun AppTopBar(
     onMenuClick: () -> Unit,
     showMenu: Boolean = true,
+    title: String? = null,
+    onBackClick: (() -> Unit)? = null,
     showMute: Boolean,
     isMuted: Boolean,
     onToggleMute: () -> Unit,
@@ -58,28 +59,50 @@ fun AppTopBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color(0xFFFBF8FD))
+            .background(MaterialTheme.colorScheme.background)
             .windowInsetsPadding(WindowInsets.statusBars)
-            .height(48.dp)
+            .height(52.dp)
             .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (showMenu) {
+        if (onBackClick != null) {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        } else if (showMenu) {
             IconButton(onClick = onMenuClick) {
-                Icon(Icons.Filled.Menu, contentDescription = "Open menu", tint = PURPLE)
+                Icon(Icons.Filled.Menu, contentDescription = "Open menu", tint = MaterialTheme.colorScheme.primary)
             }
         } else {
             // Keep the bar's height and the mute button on the right
             Spacer(modifier = Modifier.width(48.dp))
         }
-        Spacer(modifier = Modifier.weight(1f))
+
+        if (title != null) {
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = title,
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1,
+                modifier = Modifier.weight(1f)
+            )
+        } else {
+            Spacer(modifier = Modifier.weight(1f))
+        }
+
         if (showMute) {
             IconButton(onClick = onToggleMute) {
                 Icon(
                     imageVector = if (isMuted) Icons.AutoMirrored.Filled.VolumeOff
                     else Icons.AutoMirrored.Filled.VolumeUp,
                     contentDescription = if (isMuted) "Unmute music" else "Mute music",
-                    tint = PURPLE
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -112,7 +135,7 @@ fun AppDrawerContent(
                 text = "தமிழ் கற்போம்",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color = PURPLE,
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
             )
 
@@ -120,7 +143,7 @@ fun AppDrawerContent(
                 Text(
                     text = "${profileAvatar.orEmpty()} $profileName".trim(),
                     fontSize = 14.sp,
-                    color = Color(0xFF49454F),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 8.dp)
                 )
             }
@@ -176,13 +199,13 @@ private fun SectionHeader(
         Text(icon, fontSize = 20.sp)
         Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(titleTamil, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1D1B20))
-            Text(titleEnglish, fontSize = 12.sp, color = Color(0xFF49454F))
+            Text(titleTamil, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+            Text(titleEnglish, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Icon(
             imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
             contentDescription = if (expanded) "Collapse $titleEnglish" else "Expand $titleEnglish",
-            tint = PURPLE
+            tint = MaterialTheme.colorScheme.primary
         )
     }
 }
@@ -191,6 +214,6 @@ private fun SectionHeader(
 private fun DestinationLabel(titleTamil: String, titleEnglish: String) {
     Column {
         Text(titleTamil, fontSize = 15.sp, fontWeight = FontWeight.Medium)
-        Text(titleEnglish, fontSize = 12.sp, color = Color(0xFF49454F))
+        Text(titleEnglish, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

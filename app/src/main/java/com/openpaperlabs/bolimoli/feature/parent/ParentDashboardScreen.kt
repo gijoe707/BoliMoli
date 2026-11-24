@@ -59,6 +59,7 @@ fun ParentDashboardScreen(
     onBack: () -> Unit,
     onOpenLesson: (String) -> Unit,
     completedUnitIds: Set<String>,
+    starsByUnit: Map<String, Int> = emptyMap(),
     minutesLearnedToday: Int,
     dailyGoalMinutes: Int,
     onDailyGoalChange: (Int) -> Unit,
@@ -78,8 +79,8 @@ fun ParentDashboardScreen(
     val activeProfile = profiles.firstOrNull { it.id == activeProfileId }
     val profileName = activeProfile?.name ?: "—"
 
-    // Generate mastery grid dynamically based on actual completedUnitIds
-    val allMasteryGrid = remember(completedUnitIds) { buildMasteryGrid(completedUnitIds) }
+    // Generate mastery grid dynamically based on actual completedUnitIds and starsByUnit
+    val allMasteryGrid = remember(completedUnitIds, starsByUnit) { buildMasteryGrid(completedUnitIds, starsByUnit) }
 
     val weakSounds = remember(allMasteryGrid) {
         allMasteryGrid.filter { it.status == MasteryStatus.NEEDS_PRACTICE }.take(8)
@@ -540,7 +541,7 @@ fun ParentDashboardScreen(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            val options = listOf("Needs Practice", "Mastered", "All")
+                            val options = listOf("Needs Practice", "Mastered", "Not Started", "All")
                             items(options) { filter ->
                                 FilterChip(
                                     selected = (heatMapFilter == filter),
@@ -557,6 +558,7 @@ fun ParentDashboardScreen(
                             when (heatMapFilter) {
                                 "Needs Practice" -> allMasteryGrid.filter { it.status == MasteryStatus.NEEDS_PRACTICE }
                                 "Mastered" -> allMasteryGrid.filter { it.status == MasteryStatus.MASTERED }
+                                "Not Started" -> allMasteryGrid.filter { it.status == MasteryStatus.NOT_STARTED }
                                 else -> allMasteryGrid
                             }
                         }
@@ -571,11 +573,13 @@ fun ParentDashboardScreen(
                                     row.forEach { item ->
                                         val bg = when (item.status) {
                                             MasteryStatus.MASTERED -> Color(0xFFC8E6C9)
-                                            else -> Color(0xFFFFCDD2)
+                                            MasteryStatus.NEEDS_PRACTICE -> Color(0xFFFFCDD2)
+                                            MasteryStatus.NOT_STARTED -> Color(0xFFF0F0F0)
                                         }
                                         val textClr = when (item.status) {
                                             MasteryStatus.MASTERED -> Color(0xFF1B5E20)
-                                            else -> Color(0xFFB71C1C)
+                                            MasteryStatus.NEEDS_PRACTICE -> Color(0xFFB71C1C)
+                                            MasteryStatus.NOT_STARTED -> Color(0xFF616161)
                                         }
 
                                         Surface(

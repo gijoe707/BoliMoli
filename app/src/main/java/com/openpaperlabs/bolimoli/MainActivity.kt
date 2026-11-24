@@ -26,6 +26,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.openpaperlabs.bolimoli.core.audio.AppAudioEngine
 import com.openpaperlabs.bolimoli.core.audio.BackgroundMusicPlayer
 import com.openpaperlabs.bolimoli.core.curriculum.LessonCategories
 import com.openpaperlabs.bolimoli.core.profile.ProfileLogic
@@ -67,11 +68,13 @@ enum class AppScreen {
 
 class MainActivity : ComponentActivity() {
     private lateinit var backgroundMusic: BackgroundMusicPlayer
+    private lateinit var audioEngine: AppAudioEngine
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         backgroundMusic = BackgroundMusicPlayer(this)
+        audioEngine = AppAudioEngine(this)
         setContent {
             BoliMoliTheme {
                 TamilPhonicsApp(backgroundMusic = backgroundMusic)
@@ -91,6 +94,7 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
+        audioEngine.release()
         backgroundMusic.release()
         super.onDestroy()
     }
@@ -502,6 +506,7 @@ fun TamilPhonicsApp(backgroundMusic: BackgroundMusicPlayer? = null) {
                         currentScreen = AppScreen.LESSON
                     },
                     completedUnitIds = completedUnitIds,
+                    starsByUnit = progress.starsByUnit,
                     minutesLearnedToday = minutesLearnedToday,
                     dailyGoalMinutes = dailyGoalMinutes,
                     onDailyGoalChange = { commit(progress.copy(dailyGoalMinutes = it)) },
